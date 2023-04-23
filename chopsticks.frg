@@ -65,17 +65,18 @@ pred final {
 
 pred attack {
     some t: GameState.turn {
-        some h: Hand | (h in t.hands and some h.fingers) and {
-            some h2: Hand | (h2 not in t.hands and some h2.fingers) and {
-                // add[h2.fingers, h.fingers] >= 5 implies {
-                //     no h2.fingers'
-                // } else {
-                //     h2.fingers' = add[h2.fingers, h.fingers]
-                // }
-                h2.fingers = 2
-                all h3: Hand | h3 != h2 implies {
-                    h3.fingers' = h3.fingers
-                }
+        some h1, h2: Hand | {
+            h1 in t.hands and some h1.fingers
+            h2 not in t.hands and some h2.fingers  
+
+            add[h2.fingers, h1.fingers] >= 5 implies {
+                no h2.fingers'
+            } else {
+                h2.fingers' = add[h2.fingers, h1.fingers]
+            }
+            
+            all h3: Hand | h3 != h2 implies {
+                h3.fingers' = h3.fingers
             }
         }
     }
@@ -88,7 +89,6 @@ pred doMove {
 
 pred traces_basic_game {
     init[2]
-	always validState
     isRing
 	always (doMove)
 }

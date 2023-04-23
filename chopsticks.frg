@@ -74,12 +74,18 @@ pred attack {
             } else {
                 h2.fingers' = add[h2.fingers, h1.fingers]
             }
-            
+
             all h3: Hand | h3 != h2 implies {
                 h3.fingers' = h3.fingers
             }
         }
     }
+}
+
+pred doNothing{
+    final 
+    all h: Hand | h.fingers' = h.fingers
+    GameState.turn' = GameState.turn
 }
 
 pred doMove {
@@ -90,9 +96,9 @@ pred doMove {
 pred traces_basic_game {
     init[2]
     isRing
-	always (doMove)
+	always (doMove or doNothing)
 }
 
 run {
     traces_basic_game
-} for exactly 2 Team
+} for exactly 2 Team, 5 Int

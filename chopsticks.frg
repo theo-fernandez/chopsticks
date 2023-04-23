@@ -8,17 +8,23 @@ option max_tracelength 14
 \*---------------*/
 
 sig Hand {
-    fingers: lone Int
+    var fingers: lone Int
     // No int --> hand is 'out'
 }
 
 sig Team {
-	var hands : set Hand
+	hands : set Hand,
+    next : one Team
 }
 
-pred init[numHands: Int]{
-    all h: Hand | h.fingers = 1
-    all t: Team | #{t.hands} = numHands
+one sig GameState {
+    teams : set Team,
+    var turn: one Team
+}
+
+pred isRing {
+	-- every team gets to go
+	Team->Team in ^next
 }
 
 pred validState{
@@ -26,12 +32,67 @@ pred validState{
         h.fingers > 0
         h.fingers < 5
     }
+
+    #{GameState.teams} >= 2
 }
 
-pred final{
-    some t: Team | {
-        all h: Hand | {
-            h in t.hands => no h.fingers
+pred init[numHands: Int]{
+    all h: Hand | h.fingers = 1
+    all t: Team | #{t.hands} = numHands
+    all t: Team | t in GameState.teams
+
+    all h: Hand | one t: Team | {
+        h in t.hands
+    }
+}
+
+pred final {
+    some t: Team {
+        some h: Hand | {
+            h in t.hands implies {
+                some h.fingers
+            }
+        }
+        all t2: Team | t != t2 implies {
+            all h2: Hand | {
+                h2 in t2.hands implies {
+                    no h2.fingers
+                }
+            }
         }
     }
 }
+
+pred attack {
+    some t: GameState.turn {
+        some h: Hand | (h in t.hands and some h.fingers) and {
+            some h2: Hand | (h2 not in t.hands and some h2.fingers) and {
+                // add[h2.fingers, h.fingers] >= 5 implies {
+                //     no h2.fingers'
+                // } else {
+                //     h2.fingers' = add[h2.fingers, h.fingers]
+                // }
+                h2.fingers = 2
+                all h3: Hand | h3 != h2 implies {
+                    h3.fingers' = h3.fingers
+                }
+            }
+        }
+    }
+}
+
+pred doMove {
+    attack // add divide and transfer
+    GameState.turn' = GameState.turn.next
+}
+
+pred traces_basic_game {
+    init[2]
+	always validState
+    isRing
+	always (doMove)
+}
+
+run {
+    traces_basic_game
+} for exactly 2 Team

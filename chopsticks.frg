@@ -20,12 +20,11 @@ sig Team {
 one sig GameState {
     teams : set Team,
     var turn: one Team,
-
     rollover: one Int,
     even_splits_only: one Int
 }
 
-pred rollover {
+pred doRollover {
     GameState.rollover = 1
 }
 
@@ -38,7 +37,7 @@ pred evenSplitsOnly {
 }
 
 pred allSplitsValid {
-    GameState.rollover = 0
+    GameState.even_splits_only = 0
 }
 
 pred isRing {
@@ -101,6 +100,32 @@ pred attack {
     }
 }
 
+pred divide {
+    some t: GameState.turn {
+        some h1, h2: Hand | {
+            h1 in t.hands and some h1.fingers
+            h2 in t.hands and no h2.fingers  
+            // remainder[num to divide, dividing number]
+            GameState.even_splits_only = 1 => {
+                remainder[h1.fingers, 2] = 0
+            } else {
+                remainder[h1.fingers, 2] = 1
+            }
+            h1.fingers >= 2
+            some num: Int {
+                num >= 1
+                num < h1.fingers
+                h2.fingers' = num
+                h1.fingers' = subtract[h1.fingers, num]
+            }
+
+            all h3: Hand | h3 != h2 and h3 != h1 implies {
+                h3.fingers' = h3.fingers
+            }
+        }
+    }
+}
+
 pred doNothing {
     final 
     all h: Hand | h.fingers' = h.fingers
@@ -108,14 +133,17 @@ pred doNothing {
 }
 
 pred doMove {
-    attack // add divide and transfer
+    attack or divide // add divide and transfer
     GameState.turn' = GameState.turn.next
 }
 
 pred traces_basic_game {
     init[2]
     isRing
+    noRollover
+    evenSplitsOnly
 	always (doMove or doNothing)
+    // eventually divide // comment this line in if you want the first instance to divide
 }
 
 run {

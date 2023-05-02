@@ -81,18 +81,37 @@ pred final {
     }
 }
 
+
 pred attack {
     some t: GameState.turn {
         some h1, h2: Hand | {
+            -- PRE-GUARD: 
+            -- Attacking hand h1 belongs to player-with-turn and is alive
             h1 in t.hands and some h1.fingers
+
+            -- Attacked hand h2 does not belong to player-with-turn and is alive
             h2 not in t.hands and some h2.fingers  
 
-            add[h2.fingers, h1.fingers] >= 5 implies {
-                no h2.fingers'
+            -- ACTION
+            Gamestate.rollover => {
+                add[h2.fingers, h1.fingers] > 5 implies {
+                    h2.fingers' = subtract[add[h2.fingers, h1.fingers], 5]
+                } else {
+                    add[h2.fingers, h1.fingers] = 5 implies {
+                        no h2.fingers'
+                    } else {
+                        h2.fingers' = add[h2.fingers, h1.fingers]
+                    }
+                }
             } else {
-                h2.fingers' = add[h2.fingers, h1.fingers]
+                add[h2.fingers, h1.fingers] >= 5 implies {
+                    no h2.fingers'
+                } else {
+                    h2.fingers' = add[h2.fingers, h1.fingers]
+                }
             }
 
+            -- POST-GUARD: Every hand except h2 is constant
             all h3: Hand | h3 != h2 implies {
                 h3.fingers' = h3.fingers
             }

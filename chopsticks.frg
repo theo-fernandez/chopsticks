@@ -25,9 +25,6 @@ one sig GameState {
     selfAttack: one Int
 }
 
-<<<<<<< HEAD
-pred doRollover {
-=======
 pred selfAttackOk {
     GameState.selfAttack = 1
 }
@@ -37,7 +34,6 @@ pred selfAttackNotOk {
 }
 
 pred rolloverOk {
->>>>>>> 5f8bb47 (with rollover stuff)
     GameState.rollover = 1
 }
 

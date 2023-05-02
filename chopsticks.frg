@@ -19,7 +19,26 @@ sig Team {
 
 one sig GameState {
     teams : set Team,
-    var turn: one Team
+    var turn: one Team,
+
+    rollover: one Int,
+    even_splits_only: one Int
+}
+
+pred rollover {
+    GameState.rollover = 1
+}
+
+pred noRollover {
+    GameState.rollover = 0
+}
+
+pred evenSplitsOnly {
+    GameState.even_splits_only = 1
+}
+
+pred allSplitsValid {
+    GameState.rollover = 0
 }
 
 pred isRing {
@@ -82,7 +101,7 @@ pred attack {
     }
 }
 
-pred doNothing{
+pred doNothing {
     final 
     all h: Hand | h.fingers' = h.fingers
     GameState.turn' = GameState.turn

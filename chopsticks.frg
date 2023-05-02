@@ -21,14 +21,27 @@ one sig GameState {
     teams : set Team,
     var turn: one Team,
     rollover: one Int,
-    even_splits_only: one Int
+    even_splits_only: one Int,
+    selfAttack: one Int
 }
 
+<<<<<<< HEAD
 pred doRollover {
+=======
+pred selfAttackOk {
+    GameState.selfAttack = 1
+}
+
+pred selfAttackNotOk {
+    GameState.selfAttack = 0
+}
+
+pred rolloverOk {
+>>>>>>> 5f8bb47 (with rollover stuff)
     GameState.rollover = 1
 }
 
-pred noRollover {
+pred rolloverNotOk {
     GameState.rollover = 0
 }
 
@@ -84,26 +97,22 @@ pred final {
 
 pred attack {
     some t: GameState.turn {
-        some h1, h2: Hand | {
-            -- PRE-GUARD: 
-            -- Attacking hand h1 belongs to player-with-turn and is alive
-            h1 in t.hands and some h1.fingers
+        some disj h1, h2: Hand | {
+            -- PRE-GUARD: Attacking hand h1 and attacked hand h2
+            some h1.fingers and some h2.fingers
+            h1 in t.hands 
+            {GameState.selfAttack = 0} => h2 not in t.hands
 
-            -- Attacked hand h2 does not belong to player-with-turn and is alive
-            h2 not in t.hands and some h2.fingers  
-
-            -- ACTION
-            Gamestate.rollover => {
-                add[h2.fingers, h1.fingers] > 5 implies {
-                    h2.fingers' = subtract[add[h2.fingers, h1.fingers], 5]
+            -- ACTION: Increment h2
+            {GameState.rollover = 1} => {
+                -- With rollover: Hand dies only at exactly 5, mod 5 otherwise
+                add[h2.fingers, h1.fingers] = 5 implies {
+                    no h2.fingers'
                 } else {
-                    add[h2.fingers, h1.fingers] = 5 implies {
-                        no h2.fingers'
-                    } else {
-                        h2.fingers' = add[h2.fingers, h1.fingers]
-                    }
+                    h2.fingers' = remainder[add[h2.fingers, h1.fingers], 5]
                 }
             } else {
+                -- No rollover: Hand dies if more or equal to 5
                 add[h2.fingers, h1.fingers] >= 5 implies {
                     no h2.fingers'
                 } else {
@@ -158,6 +167,8 @@ pred doMove {
 
 pred traces_basic_game {
     init[2]
+    rolloverOk
+    selfAttackNotOk
     isRing
     noRollover
     evenSplitsOnly

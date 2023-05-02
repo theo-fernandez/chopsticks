@@ -17,36 +17,44 @@ sig Team {
     next : one Team
 }
 
-one sig GameState {
+abstract sig Rule {}
+
+one sig Rollover extends Rule {}
+one sig EvenSplitsOnly extends Rule {}
+one sig SelfAttack extends Rule {}
+
+
+one sig Game {
     teams : set Team,
     var turn: one Team,
-    rollover: one Int,
-    even_splits_only: one Int,
-    selfAttack: one Int
+    // rollover: one Int,
+    // even_splits_only: one Int,
+    // selfAttack: one Int
+    rules: set Rule
 }
 
 pred selfAttackOk {
-    GameState.selfAttack = 1
+    SelfAttack in Game.rules
 }
 
 pred selfAttackNotOk {
-    GameState.selfAttack = 0
+    SelfAttack not in Game.rules
 }
 
 pred rolloverOk {
-    GameState.rollover = 1
+    Rollover in Game.rules
 }
 
 pred rolloverNotOk {
-    GameState.rollover = 0
+    Rollover not in Game.rules
 }
 
 pred evenSplitsOnly {
-    GameState.even_splits_only = 1
+    EvenSplitsOnly in Game.rules
 }
 
 pred allSplitsValid {
-    GameState.even_splits_only = 0
+    EvenSplitsOnly not in Game.rules
 }
 
 pred isRing {
@@ -60,13 +68,13 @@ pred validState{
         h.fingers < 5
     }
 
-    #{GameState.teams} >= 2
+    #{Game.teams} >= 2
 }
 
 pred init[numHands: Int]{
     all h: Hand | h.fingers = 1
     all t: Team | #{t.hands} = numHands
-    all t: Team | t in GameState.teams
+    all t: Team | t in Game.teams
 
     all h: Hand | one t: Team | {
         h in t.hands
@@ -92,15 +100,15 @@ pred final {
 
 
 pred attack {
-    some t: GameState.turn {
+    some t: Game.turn {
         some disj h1, h2: Hand | {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
             some h1.fingers and some h2.fingers
             h1 in t.hands 
-            {GameState.selfAttack = 0} => h2 not in t.hands
+            {SelfAttack not in Game.rules} => h2 not in t.hands
 
             -- ACTION: Increment h2
-            {GameState.rollover = 1} => {
+            {Rollover in Game.rules} => {
                 -- With rollover: Hand dies only at exactly 5, mod 5 otherwise
                 add[h2.fingers, h1.fingers] = 5 implies {
                     no h2.fingers'
@@ -125,12 +133,12 @@ pred attack {
 }
 
 pred divide {
-    some t: GameState.turn {
+    some t: Game.turn {
         some h1, h2: Hand | {
             h1 in t.hands and some h1.fingers
             h2 in t.hands and no h2.fingers  
             // remainder[num to divide, dividing number]
-            GameState.even_splits_only = 1 => {
+            EvenSplitsOnly in Game.rules => {
                 remainder[h1.fingers, 2] = 0
             } else {
                 remainder[h1.fingers, 2] = 1
@@ -153,23 +161,22 @@ pred divide {
 pred doNothing {
     final 
     all h: Hand | h.fingers' = h.fingers
-    GameState.turn' = GameState.turn
+    Game.turn' = Game.turn
 }
 
 pred doMove {
     attack or divide // add divide and transfer
-    GameState.turn' = GameState.turn.next
+    Game.turn' = Game.turn.next
 }
 
 pred traces_basic_game {
     init[2]
     rolloverOk
     selfAttackNotOk
-    isRing
-    noRollover
     evenSplitsOnly
+    isRing
 	always (doMove or doNothing)
-    // eventually divide // comment this line in if you want the first instance to divide
+    eventually divide // comment this line in if you want the first instance to divide
 }
 
 run {

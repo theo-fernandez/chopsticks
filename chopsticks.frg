@@ -22,14 +22,11 @@ abstract sig Rule {}
 one sig Rollover extends Rule {}
 one sig EvenSplitsOnly extends Rule {}
 one sig SelfAttack extends Rule {}
-
+one sig Suicice extends Rule {}
 
 one sig Game {
     teams : set Team,
     var turn: one Team,
-    // rollover: one Int,
-    // even_splits_only: one Int,
-    // selfAttack: one Int
     rules: set Rule
 }
 
@@ -47,6 +44,14 @@ pred rolloverOk {
 
 pred rolloverNotOk {
     Rollover not in Game.rules
+}
+
+pred suicideOk {
+    Suicide in Game.rules
+}
+
+pred suicideNotOk {
+    Suicide not in Game.rules
 }
 
 pred evenSplitsOnly {
@@ -100,6 +105,8 @@ pred final {
 
 
 pred attack {
+    Game.turn' = Game.turn.next
+
     some t: Game.turn {
         some disj h1, h2: Hand | {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
@@ -133,24 +140,32 @@ pred attack {
 }
 
 pred divide {
+    Game.turn' = Game.turn.next
+
     some t: Game.turn {
-        some h1, h2: Hand | {
+        some h1, h2: Hand {
+            -- PRE-GUARD: Attacking hand h1 and attacked hand h2
             h1 in t.hands and some h1.fingers
             h2 in t.hands and no h2.fingers  
-            // remainder[num to divide, dividing number]
             EvenSplitsOnly in Game.rules => {
                 remainder[h1.fingers, 2] = 0
             } else {
                 remainder[h1.fingers, 2] = 1
             }
-            h1.fingers >= 2
+
+            -- ACTION: Decrement h1 and Increment h2
             some num: Int {
                 num >= 1
-                num < h1.fingers
+                {Suicide in Game.rules} implies {
+                    num <= h1.fingers
+                } else {
+                    num < h1.fingers
+                }
                 h2.fingers' = num
                 h1.fingers' = subtract[h1.fingers, num]
             }
 
+            -- POST-GUARD: Every hand except h2 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
                 h3.fingers' = h3.fingers
             }
@@ -164,19 +179,87 @@ pred doNothing {
     Game.turn' = Game.turn
 }
 
-pred doMove {
-    attack or divide // add divide and transfer
-    Game.turn' = Game.turn.next
-}
+// pred traces_official_rules {
+//     init[2]
+//     isRing
 
-pred traces_basic_game {
+//     rolloverOk
+//     selfAttackOk
+//     allSplitsValid
+//     suicideNotOk
+
+//     always (attack or divide or transfer or doNothing)
+// }
+
+// pred traces_misere {
+//     // We need to change the win condition for this to work
+// }
+
+// pred traces_suicide {
+//     init[2]
+//     isRing
+
+//     rolloverOk
+//     selfAttackOk
+//     allSplitsValid
+//     suicideOk
+
+//     always (attack or divide or transfer or doNothing)
+// }
+
+// pred traces_swaps {}
+// pred traces_sudden_death {}
+// pred traces_meta {}
+// pred traces_logan_clause {}
+
+// pred traces_cutoff {
+//     init[2]
+//     isRing
+
+//     rolloverNotOk
+//     selfAttackOk
+//     allSplitsValid
+//     suicideNotOk
+
+//     always (attack or divide or transfer or doNothing)
+// }
+
+// pred traces_zombies {}
+
+// pred traces_transfers_only {
+//     init[2]
+//     isRing
+
+//     rolloverNotOk
+//     selfAttackOk
+//     allSplitsValid
+//     suicideNotOk
+
+//     always (attack or transfer or doNothing)
+// }
+
+// pred traces_divisions_only {
+//     init[2]
+//     isRing
+
+//     rolloverNotOk
+//     selfAttackOk
+//     allSplitsValid
+//     suicideNotOk
+
+//     always (attack or divide or doNothing)
+// }
+
+pred traces_theo_rules {
     init[2]
-    rolloverOk
+    isRing
+
+    rolloverNotOk
     selfAttackNotOk
     evenSplitsOnly
-    isRing
-	always (doMove or doNothing)
-    eventually divide // comment this line in if you want the first instance to divide
+    suicideNotOk
+
+    always (attack or divide or doNothing)
 }
 
 run {

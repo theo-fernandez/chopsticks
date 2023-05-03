@@ -22,7 +22,7 @@ abstract sig Rule {}
 one sig Rollover extends Rule {}
 one sig EvenSplitsOnly extends Rule {}
 one sig SelfAttack extends Rule {}
-one sig Suicice extends Rule {}
+one sig Suicide extends Rule {}
 
 one sig Game {
     teams : set Team,
@@ -263,5 +263,5 @@ pred traces_theo_rules {
 }
 
 run {
-    traces_basic_game
+    traces_theo_rules
 } for exactly 2 Team, 5 Int

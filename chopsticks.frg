@@ -15,8 +15,10 @@ sig Hand {
 sig Team {
 	hands : set Hand,
     next : one Team
+    var transferStreak: lone Int
 }
 
+<<<<<<< HEAD
 abstract sig Rule {}
 
 one sig Rollover extends Rule {}
@@ -28,8 +30,19 @@ one sig Game {
     teams : set Team,
     var turn: one Team,
     rules: set Rule
+=======
+one sig GameState {
+    var turn: one Team,
+
+    rollover: one Int,
+    even_splits_only: one Int,
+    selfAttack: one Int
+>>>>>>> 252e5c7 (added transfer streak)
 }
 
+/*--------------------*\
+|   Rule Predicates   |
+\*--------------------*/
 pred selfAttackOk {
     SelfAttack in Game.rules
 }
@@ -63,7 +76,7 @@ pred allSplitsValid {
 }
 
 pred isRing {
-	-- every team gets to go
+	-- Every team gets to go
 	Team->Team in ^next
 }
 
@@ -79,7 +92,10 @@ pred validState{
 pred init[numHands: Int]{
     all h: Hand | h.fingers = 1
     all t: Team | #{t.hands} = numHands
+<<<<<<< HEAD
     all t: Team | t in Game.teams
+=======
+>>>>>>> 252e5c7 (added transfer streak)
 
     all h: Hand | one t: Team | {
         h in t.hands
@@ -103,16 +119,24 @@ pred final {
     }
 }
 
+/*---------*\
+|   Moves  |
+\*---------*/
 
 pred attack {
     Game.turn' = Game.turn.next
 
     some t: Game.turn {
         some disj h1, h2: Hand | {
-            -- PRE-GUARD: Attacking hand h1 and attacked hand h2
+            -- PRE-GUARD: Attacking hand h1, attacked hand h2
             some h1.fingers and some h2.fingers
             h1 in t.hands 
+<<<<<<< HEAD
             {SelfAttack not in Game.rules} => h2 not in t.hands
+=======
+            ---- If self-attack is not allowed, h2 must not be own hand
+            {GameState.selfAttack = 0} => h2 not in t.hands
+>>>>>>> 252e5c7 (added transfer streak)
 
             -- ACTION: Increment h2
             {Rollover in Game.rules} => {
@@ -135,6 +159,12 @@ pred attack {
             all h3: Hand | h3 != h2 implies {
                 h3.fingers' = h3.fingers
             }
+            
+        }
+
+        t.transferStreak' = 0
+        all t2: Team | t2 != t implies {
+            t2.transferStreak' = t2.transferStreak
         }
     }
 }
@@ -147,7 +177,12 @@ pred divide {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
             h1 in t.hands and some h1.fingers
             h2 in t.hands and no h2.fingers  
+<<<<<<< HEAD
             EvenSplitsOnly in Game.rules => {
+=======
+
+            {GameState.even_splits_only = 1} => {
+>>>>>>> 252e5c7 (added transfer streak)
                 remainder[h1.fingers, 2] = 0
             } else {
                 remainder[h1.fingers, 2] = 1
@@ -174,7 +209,7 @@ pred divide {
 }
 
 pred doNothing {
-    final 
+    final
     all h: Hand | h.fingers' = h.fingers
     Game.turn' = Game.turn
 }

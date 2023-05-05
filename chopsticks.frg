@@ -14,11 +14,10 @@ sig Hand {
 
 sig Team {
 	hands : set Hand,
-    next : one Team
+    next : one Team,
     var transferStreak: lone Int
 }
 
-<<<<<<< HEAD
 abstract sig Rule {}
 
 one sig Rollover extends Rule {}
@@ -30,14 +29,6 @@ one sig Game {
     teams : set Team,
     var turn: one Team,
     rules: set Rule
-=======
-one sig GameState {
-    var turn: one Team,
-
-    rollover: one Int,
-    even_splits_only: one Int,
-    selfAttack: one Int
->>>>>>> 252e5c7 (added transfer streak)
 }
 
 /*--------------------*\
@@ -92,10 +83,7 @@ pred validState{
 pred init[numHands: Int]{
     all h: Hand | h.fingers = 1
     all t: Team | #{t.hands} = numHands
-<<<<<<< HEAD
     all t: Team | t in Game.teams
-=======
->>>>>>> 252e5c7 (added transfer streak)
 
     all h: Hand | one t: Team | {
         h in t.hands
@@ -124,19 +112,12 @@ pred final {
 \*---------*/
 
 pred attack {
-    Game.turn' = Game.turn.next
-
     some t: Game.turn {
         some disj h1, h2: Hand | {
             -- PRE-GUARD: Attacking hand h1, attacked hand h2
             some h1.fingers and some h2.fingers
             h1 in t.hands 
-<<<<<<< HEAD
             {SelfAttack not in Game.rules} => h2 not in t.hands
-=======
-            ---- If self-attack is not allowed, h2 must not be own hand
-            {GameState.selfAttack = 0} => h2 not in t.hands
->>>>>>> 252e5c7 (added transfer streak)
 
             -- ACTION: Increment h2
             {Rollover in Game.rules} => {
@@ -154,6 +135,8 @@ pred attack {
                     h2.fingers' = add[h2.fingers, h1.fingers]
                 }
             }
+            -- ACTION: Change Turn
+            Game.turn' = Game.turn.next
 
             -- POST-GUARD: Every hand except h2 is constant
             all h3: Hand | h3 != h2 implies {
@@ -169,26 +152,53 @@ pred attack {
     }
 }
 
-pred divide {
-    Game.turn' = Game.turn.next
+pred transfer {
+    some t: Game.turn {
+        -- PRE-GUARD: Player has not transfered more than thrice in a row
+        t.transferStreak < 3
+    
+        some h1, h2: Hand {
+            -- PRE-GUARD: h1 and h2 belong to the same player and neither are dead
+            h1 in t.hands and some h1.fingers
+            h2 in t.hands and some h2.fingers  
 
+            -- ACTION: Finger count changes but total fingers stay the same
+            h1.fingers' != h1.fingers
+            h2.fingers' != h2.fingers
+            add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]
+
+            -- No adding more than five to one hand
+            h1.fingers' < 5 and h2.fingers' < 5
+
+            -- ACTION: Change Turn
+            Game.turn' = Game.turn.next
+
+            -- POST-GUARD: Every hand except h2/h1 is constant
+            all h3: Hand | h3 != h2 and h3 != h1 implies {
+                h3.fingers' = h3.fingers
+            }
+        }
+        t.transferStreak' = add[t.transferStreak, 1]
+        all t2: Team | t2 != t implies {
+            t2.transferStreak' = t2.transferStreak
+        }
+
+    }
+    
+}
+pred divide {
     some t: Game.turn {
         some h1, h2: Hand {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
             h1 in t.hands and some h1.fingers
             h2 in t.hands and no h2.fingers  
-<<<<<<< HEAD
             EvenSplitsOnly in Game.rules => {
-=======
-
-            {GameState.even_splits_only = 1} => {
->>>>>>> 252e5c7 (added transfer streak)
                 remainder[h1.fingers, 2] = 0
             } else {
                 remainder[h1.fingers, 2] = 1
             }
 
-            -- ACTION: Decrement h1 and Increment h2
+            -- ACTION: Decrement h1 and increment h2
             some num: Int {
                 num >= 1
                 {Suicide in Game.rules} implies {
@@ -199,11 +209,17 @@ pred divide {
                 h2.fingers' = num
                 h1.fingers' = subtract[h1.fingers, num]
             }
+            -- ACTION: Change Turn
+            Game.turn' = Game.turn.next
 
-            -- POST-GUARD: Every hand except h2 is constant
+            -- POST-GUARD: Every hand except h2, h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
                 h3.fingers' = h3.fingers
             }
+        }
+        t.transferStreak' = 0
+        all t2: Team | t2 != t implies {
+            t2.transferStreak' = t2.transferStreak
         }
     }
 }

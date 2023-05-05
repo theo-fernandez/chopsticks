@@ -252,6 +252,19 @@ pred traces_official_rules {
     eventually always doNothing
 }
 
+pred traces_official_rules_threehands {
+    init[3]
+
+    rolloverNotOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
+
+    always (attack or divide or transfer[3] or doNothing)
+    // eventually always doNothing
+}
+
+
 // pred traces_misere {
 //     // We need to change the win condition for this to work
 // }
@@ -323,5 +336,5 @@ pred traces_official_rules {
 // }
 
 run {
-    traces_official_rules
+    traces_official_rules_threehands
 } for exactly 2 Team, 5 Int

@@ -8,8 +8,8 @@ option max_tracelength 14
 \*---------------*/
 
 sig Hand {
-    var fingers: lone Int
-    // No int --> hand is 'out'
+    var fingers: one Int
+    // 0 --> hand is 'out'
 }
 
 sig Team {
@@ -119,7 +119,7 @@ pred attack {
     some t: Game.turn {
         some disj h1, h2: Hand | {
             -- PRE-GUARD: Attacking hand h1, attacked hand h2
-            some h1.fingers and some h2.fingers
+            h1.fingers > 0 and h2.fingers > 0
             h1 in t.hands 
             {SelfAttack not in Game.rules} => h2 not in t.hands
 
@@ -134,7 +134,7 @@ pred attack {
             } else {
                 -- No rollover: Hand dies if more or equal to 5
                 add[h2.fingers, h1.fingers] >= 5 implies {
-                    no h2.fingers'
+                    h2.fingers' = 0
                 } else {
                     h2.fingers' = add[h2.fingers, h1.fingers]
                 }
@@ -163,8 +163,8 @@ pred transfer[maxStreak: Int] {
     
         some disj h1, h2: Hand {
             -- PRE-GUARD: h1 and h2 belong to the same player and neither are dead
-            h1 in t.hands and some h1.fingers
-            h2 in t.hands and some h2.fingers  
+            h1 in t.hands and h1.fingers > 0
+            h2 in t.hands and h2.fingers > 0
 
             -- ACTION: Finger count changes but total fingers stay the same
             h1.fingers' != h1.fingers
@@ -196,8 +196,8 @@ pred divide {
     some t: Game.turn {
         some h1, h2: Hand {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
-            h1 in t.hands and some h1.fingers
-            h2 in t.hands and no h2.fingers  
+            h1 in t.hands and h1.fingers > 0
+            h2 in t.hands and h2.fingers = 0
             EvenSplitsOnly in Game.rules => {
                 remainder[h1.fingers, 2] = 0
             } else {
@@ -235,6 +235,10 @@ pred doNothing {
     all h: Hand | h.fingers' = h.fingers
     Game.turn' = Game.turn
 }
+
+/*---------------*\
+|   Rule traces  |
+\*---------------*/
 
 pred traces_official_rules {
     init[2]

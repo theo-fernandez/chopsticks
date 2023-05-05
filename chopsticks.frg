@@ -71,36 +71,40 @@ pred isRing {
 	Team->Team in ^next
 }
 
-pred validState{
-    all h: Hand | {
-        h.fingers > 0
-        h.fingers < 5
-    }
+// pred validState{
+//     all h: Hand | {
+//         h.fingers >= 0
+//         h.fingers < 5
+//     }
 
-    #{Game.teams} >= 2
-}
+//     #{Game.teams} >= 2
+// }
 
 pred init[numHands: Int]{
+    isRing
+
     all h: Hand | h.fingers = 1
-    all t: Team | #{t.hands} = numHands
-    all t: Team | t in Game.teams
+    all t: Team | {
+        #{t.hands} = numHands
+        t.transferStreak = 0
+    }
 
     all h: Hand | one t: Team | {
         h in t.hands
     }
 }
 
-pred final {
+pred gameEnded {
     some t: Team {
         some h: Hand | {
             h in t.hands implies {
-                some h.fingers
+                h.fingers > 0
             }
         }
         all t2: Team | t != t2 implies {
             all h2: Hand | {
                 h2 in t2.hands implies {
-                    no h2.fingers
+                    h2.fingers = 0
                 }
             }
         }
@@ -123,7 +127,7 @@ pred attack {
             {Rollover in Game.rules} => {
                 -- With rollover: Hand dies only at exactly 5, mod 5 otherwise
                 add[h2.fingers, h1.fingers] = 5 implies {
-                    no h2.fingers'
+                    h2.fingers' = 0
                 } else {
                     h2.fingers' = remainder[add[h2.fingers, h1.fingers], 5]
                 }
@@ -152,12 +156,12 @@ pred attack {
     }
 }
 
-pred transfer {
+pred transfer[maxStreak: Int] {
     some t: Game.turn {
         -- PRE-GUARD: Player has not transfered more than thrice in a row
-        t.transferStreak < 3
+        t.transferStreak < maxStreak
     
-        some h1, h2: Hand {
+        some disj h1, h2: Hand {
             -- PRE-GUARD: h1 and h2 belong to the same player and neither are dead
             h1 in t.hands and some h1.fingers
             h2 in t.hands and some h2.fingers  
@@ -167,8 +171,10 @@ pred transfer {
             h2.fingers' != h2.fingers
             add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]
 
-            -- No adding more than five to one hand
-            h1.fingers' < 5 and h2.fingers' < 5
+            // -- No adding more than five to one hand
+            // Could also be in a valid state predicate instead?
+            h1.fingers' < 5 and h1.fingers' >=0
+            h2.fingers' < 5 and h2.fingers' >= 0
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
@@ -225,22 +231,22 @@ pred divide {
 }
 
 pred doNothing {
-    final
+    gameEnded
     all h: Hand | h.fingers' = h.fingers
     Game.turn' = Game.turn
 }
 
-// pred traces_official_rules {
-//     init[2]
-//     isRing
+pred traces_official_rules {
+    init[2]
 
-//     rolloverOk
-//     selfAttackOk
-//     allSplitsValid
-//     suicideNotOk
+    rolloverOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
 
-//     always (attack or divide or transfer or doNothing)
-// }
+    always (attack or divide or transfer[3] or doNothing)
+    eventually always doNothing
+}
 
 // pred traces_misere {
 //     // We need to change the win condition for this to work
@@ -255,7 +261,7 @@ pred doNothing {
 //     allSplitsValid
 //     suicideOk
 
-//     always (attack or divide or transfer or doNothing)
+//     always (attack or divide or transfer[3] or doNothing)
 // }
 
 // pred traces_swaps {}
@@ -272,7 +278,7 @@ pred doNothing {
 //     allSplitsValid
 //     suicideNotOk
 
-//     always (attack or divide or transfer or doNothing)
+//     always (attack or divide or transfer[3] or doNothing)
 // }
 
 // pred traces_zombies {}
@@ -286,7 +292,7 @@ pred doNothing {
 //     allSplitsValid
 //     suicideNotOk
 
-//     always (attack or transfer or doNothing)
+//     always (attack or transfer[3] or doNothing)
 // }
 
 // pred traces_divisions_only {
@@ -301,18 +307,17 @@ pred doNothing {
 //     always (attack or divide or doNothing)
 // }
 
-pred traces_theo_rules {
-    init[2]
-    isRing
+// pred traces_theo_rules {
+//     init[2]
 
-    rolloverNotOk
-    selfAttackNotOk
-    evenSplitsOnly
-    suicideNotOk
+//     rolloverNotOk
+//     selfAttackNotOk
+//     evenSplitsOnly
+//     suicideNotOk
 
-    always (attack or divide or doNothing)
-}
+//     always (attack or divide or doNothing)
+// }
 
 run {
-    traces_theo_rules
+    traces_official_rules
 } for exactly 2 Team, 5 Int

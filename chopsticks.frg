@@ -1,7 +1,7 @@
 #lang forge
 
 option problem_type temporal
-option max_tracelength 14
+option max_tracelength 20
 
 /*---------------*\
 |   Definitions   |
@@ -230,6 +230,20 @@ pred divide {
     }
 }
 
+pred pass {
+    some t: Game.turn {
+        all h: Hand {
+            -- PRE-GUARD: Hands have no fingers
+            h in t.hands implies {
+                h.fingers = 0
+            }
+        
+            -- ACTION: Change Turn
+            Game.turn' = Game.turn.next
+        }
+    }
+}
+
 pred doNothing {
     gameEnded
     all h: Hand | h.fingers' = h.fingers
@@ -324,17 +338,17 @@ pred traces_official_rules_threehands {
 //     always (attack or divide or doNothing)
 // }
 
-// pred traces_theo_rules {
-//     init[2]
+pred traces_theo_rules {
+    init[2]
 
-//     rolloverNotOk
-//     selfAttackNotOk
-//     evenSplitsOnly
-//     suicideNotOk
+    rolloverNotOk
+    selfAttackNotOk
+    evenSplitsOnly
+    suicideNotOk
 
-//     always (attack or divide or doNothing)
-// }
+    always (attack or divide or pass or doNothing)
+}
 
 run {
-    traces_official_rules_threehands
-} for exactly 2 Team, 5 Int
+    traces_theo_rules
+} for exactly 3 Team, 5 Int

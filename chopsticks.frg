@@ -166,15 +166,22 @@ pred transfer[maxStreak: Int] {
             h1 in t.hands and h1.fingers > 0
             h2 in t.hands and h2.fingers > 0
 
-            -- ACTION: Finger count changes but total fingers stay the same
+            -- ACTION: Finger count changes
             h1.fingers' != h1.fingers
             h2.fingers' != h2.fingers
-            add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]
+            h1.fingers' < 5 and h2.fingers' < 5
 
-            // -- No adding more than five to one hand
-            // Could also be in a valid state predicate instead?
-            h1.fingers' < 5 and h1.fingers' >=0
-            h2.fingers' < 5 and h2.fingers' >= 0
+            {Suicide not in Game.rules} implies {
+                // -- If suicide disallowed, neither hand can die
+                add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]
+                h1.fingers' > 0 and h2.fingers' > 0
+            } else {
+                // -- If suicide allowed, either hand can die and be replaced by mod 5
+                {add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]} or 
+                    {add[h1.fingers', h2.fingers'] = remainder[add[h1.fingers, h2.fingers], 5]}
+
+                h1.fingers' >= 0 and h2.fingers' >= 0
+            }
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
@@ -207,11 +214,7 @@ pred divide {
             -- ACTION: Decrement h1 and increment h2
             some num: Int {
                 num >= 1
-                {Suicide in Game.rules} implies {
-                    num <= h1.fingers
-                } else {
-                    num < h1.fingers
-                }
+                num < h1.fingers
                 h2.fingers' = num
                 h1.fingers' = subtract[h1.fingers, num]
             }
@@ -231,15 +234,21 @@ pred divide {
 }
 
 pred pass {
+    not gameEnded
     some t: Game.turn {
         all h: Hand {
             -- PRE-GUARD: Hands have no fingers
-            h in t.hands implies {
-                h.fingers = 0
-            }
-        
+            h in t.hands implies h.fingers = 0
+
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+
+            -- POST-GUARD: Every hand is constant
+            h.fingers' = h.fingers
+        }
+        -- POST-GUARD: Every transferstreak is constant
+        all t2: Team | {
+            t2.transferStreak' = t2.transferStreak
         }
     }
 }
@@ -262,12 +271,35 @@ pred traces_official_rules {
     allSplitsValid
     suicideNotOk
 
-    always (attack or divide or transfer[3] or doNothing)
-    eventually always doNothing
+    always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred traces_official_rules_threehands {
+pred traces_official_rules_three_hands {
     init[3]
+
+    rolloverOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
+
+    always (attack or divide or transfer[3] or pass or doNothing)
+}
+
+pred traces_suicide {
+    init[2]
+    isRing
+
+    rolloverOk
+    selfAttackOk
+    allSplitsValid
+    suicideOk
+
+    always (attack or divide or transfer[3] or pass or doNothing)
+}
+
+pred traces_cutoff {
+    init[2]
+    isRing
 
     rolloverNotOk
     selfAttackOk
@@ -275,70 +307,33 @@ pred traces_official_rules_threehands {
     suicideNotOk
 
     always (attack or divide or transfer[3] or doNothing)
-    // eventually always doNothing
 }
 
+pred traces_transfers_only {
+    init[2]
+    isRing
 
-// pred traces_misere {
-//     // We need to change the win condition for this to work
-// }
+    rolloverNotOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
 
-// pred traces_suicide {
-//     init[2]
-//     isRing
+    always (attack or transfer[3] or pass or doNothing)
+}
 
-//     rolloverOk
-//     selfAttackOk
-//     allSplitsValid
-//     suicideOk
+pred traces_divisions_only {
+    init[2]
+    isRing
 
-//     always (attack or divide or transfer[3] or doNothing)
-// }
+    rolloverNotOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
 
-// pred traces_swaps {}
-// pred traces_sudden_death {}
-// pred traces_meta {}
-// pred traces_logan_clause {}
+    always (attack or divide or pass or doNothing)
+}
 
-// pred traces_cutoff {
-//     init[2]
-//     isRing
-
-//     rolloverNotOk
-//     selfAttackOk
-//     allSplitsValid
-//     suicideNotOk
-
-//     always (attack or divide or transfer[3] or doNothing)
-// }
-
-// pred traces_zombies {}
-
-// pred traces_transfers_only {
-//     init[2]
-//     isRing
-
-//     rolloverNotOk
-//     selfAttackOk
-//     allSplitsValid
-//     suicideNotOk
-
-//     always (attack or transfer[3] or doNothing)
-// }
-
-// pred traces_divisions_only {
-//     init[2]
-//     isRing
-
-//     rolloverNotOk
-//     selfAttackOk
-//     allSplitsValid
-//     suicideNotOk
-
-//     always (attack or divide or doNothing)
-// }
-
-pred traces_theo_rules {
+pred traces_LCW_rules {
     init[2]
 
     rolloverNotOk
@@ -350,5 +345,5 @@ pred traces_theo_rules {
 }
 
 run {
-    traces_theo_rules
+    traces_LCW_rules
 } for exactly 3 Team, 5 Int

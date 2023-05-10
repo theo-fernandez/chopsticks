@@ -171,16 +171,37 @@ pred transfer[maxStreak: Int] {
             h2.fingers' != h2.fingers
             h1.fingers' < 5 and h2.fingers' < 5
 
-            {Suicide not in Game.rules} implies {
-                // -- If suicide disallowed, neither hand can die
-                add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]
-                h1.fingers' > 0 and h2.fingers' > 0
-            } else {
-                // -- If suicide allowed, either hand can die and be replaced by mod 5
-                {add[h1.fingers', h2.fingers'] = add[h1.fingers, h2.fingers]} or 
-                    {add[h1.fingers', h2.fingers'] = remainder[add[h1.fingers, h2.fingers], 5]}
+            -- ACTION: Pick a number, remove it from one hand, and add it to the other.
+            -- Modifies the number picked based on the Suicide and Rollover rules.
+            some num: Int {
+                num >= 1
 
-                h1.fingers' >= 0 and h2.fingers' >= 0
+                {Suicide in Game.rules} implies {
+                    num <= h1.fingers
+                } else {
+                    num < h1.fingers
+                }
+
+                {Rollover in Game.rules} implies {
+                    {Suicide not in Game.rules} implies {
+                        remainder[add[num, h2.fingers], 5] != 0
+                    }
+
+                    h2.fingers' = remainder[add[num, h2.fingers], 5]
+                    h1.fingers' = subtract[h1.fingers, num]
+                } else {
+                    {Suicide not in Game.rules} implies {
+                        h2.fingers + num < 5
+                    }
+
+                    {add[num, h2.fingers] >= 5} implies {
+                        h2.fingers' = 0
+                    } else {
+                        h2.fingers' = add[num, h2.fingers]
+                    }
+
+                    h1.fingers' = subtract[h1.fingers, num]
+                }
             }
 
             -- ACTION: Change Turn
@@ -203,12 +224,10 @@ pred divide {
     some t: Game.turn {
         some h1, h2: Hand {
             -- PRE-GUARD: Attacking hand h1 and attacked hand h2
-            h1 in t.hands and h1.fingers > 0
+            h1 in t.hands and h1.fingers > 1
             h2 in t.hands and h2.fingers = 0
             EvenSplitsOnly in Game.rules => {
                 remainder[h1.fingers, 2] = 0
-            } else {
-                remainder[h1.fingers, 2] = 1
             }
 
             -- ACTION: Decrement h1 and increment h2
@@ -226,6 +245,7 @@ pred divide {
                 h3.fingers' = h3.fingers
             }
         }
+
         t.transferStreak' = 0
         all t2: Team | t2 != t implies {
             t2.transferStreak' = t2.transferStreak
@@ -346,4 +366,5 @@ pred traces_LCW_rules {
 
 run {
     traces_LCW_rules
+    always doNothing
 } for exactly 3 Team, 5 Int

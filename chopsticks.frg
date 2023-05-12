@@ -28,9 +28,14 @@ one sig SelfAttack extends Rule {}
 one sig Suicide extends Rule {}
 
 one sig Game {
+    rules: set Rule,
+    // For visualization
     var turn: one Team,
-    rules: set Rule
+    // var lastChanged: set Hand,
+    var lastChangedH1: lone Hand,
+    var lastChangedH2: lone Hand
 }
+
 
 /*--------------------*\
 |   Rule Predicates   |
@@ -74,7 +79,6 @@ pred isRing {
 
 pred init[numHands: Int]{
     isRing
-
     all h: Hand | h.fingers = 1
     all t: Team | {
         #{t.hands} = numHands
@@ -84,6 +88,10 @@ pred init[numHands: Int]{
     all h: Hand | one t: Team | {
         h in t.hands
     }
+    
+    no lastChangedH1
+    no lastChangedH2
+    // #{Game.lastChanged} = 0
 }
 
 pred gameEnded {
@@ -133,6 +141,14 @@ pred attack {
             }
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+
+            -- Update last changed
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
+            
 
             -- POST-GUARD: Every hand except h2 is constant
             all h3: Hand | h3 != h2 implies {
@@ -198,6 +214,11 @@ pred transfer[maxStreak: Int] {
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+            -- Update last changed
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2/h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -231,6 +252,11 @@ pred divide {
             }
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+            -- Update last changed
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2, h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -254,7 +280,11 @@ pred pass {
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
-
+            -- Update last changed
+            no lastChangedH1'
+            no lastChangedH2'
+            // #{Game.lastChanged'} = 0
+        
             -- POST-GUARD: Every hand is constant
             h.fingers' = h.fingers
         }
@@ -268,7 +298,11 @@ pred pass {
 pred doNothing {
     gameEnded
     all h: Hand | h.fingers' = h.fingers
+
     Game.turn' = Game.turn
+    no lastChangedH1'
+    no lastChangedH2'
+    // #{Game.lastChanged'} = 0
 }
 
 /*---------------*\
@@ -345,8 +379,8 @@ pred tracesDivisionsOnly {
     always (attack or divide or pass or doNothing)
 }
 
-pred tracesLCWRules {
-    init[2]
+pred traces_LCW_rules[handsPerPlayer: Int] {
+    init[handsPerPlayer]
 
     rolloverNotOk
     selfAttackNotOk
@@ -371,8 +405,5 @@ pred tracesDeathmatch {
 
 
 run {
-    tracesLCWRules
-    // eventually divide
-    // eventually doNothing
-    // #{Hand} = 6
+    tracesLCWRules[2]
 } for exactly 2 Team, 5 Int, 6 Hand

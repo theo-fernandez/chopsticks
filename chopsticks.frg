@@ -301,8 +301,8 @@ pred doNothing {
 |   Rule traces  |
 \*---------------*/
 
-pred tracesOfficialRules {
-    init[2]
+pred tracesOfficialRules[handsPerPlayer: Int] {
+    init[handsPerPlayer]
 
     rolloverOk
     selfAttackOk
@@ -312,19 +312,8 @@ pred tracesOfficialRules {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred tracesOfficialRulesThreeHands {
-    init[3]
-
-    rolloverOk
-    selfAttackOk
-    allSplitsValid
-    suicideNotOk
-
-    always (attack or divide or transfer[3] or pass or doNothing)
-}
-
-pred tracesSuicide {
-    init[2]
+pred tracesSuicide[handsPerPlayer: Int] {
+    init[handsPerPlayer]
     isRing
 
     rolloverOk
@@ -335,8 +324,8 @@ pred tracesSuicide {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred tracesCutoff {
-    init[2]
+pred tracesCutoff[handsPerPlayer: Int] {
+    init[handsPerPlayer]
     isRing
 
     rolloverNotOk
@@ -347,8 +336,8 @@ pred tracesCutoff {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred tracesTransfersOnly {
-    init[2]
+pred tracesTransfersOnly[handsPerPlayer: Int] {
+    init[handsPerPlayer]
     isRing
 
     rolloverNotOk
@@ -359,8 +348,8 @@ pred tracesTransfersOnly {
     always (attack or transfer[3] or pass or doNothing)
 }
 
-pred tracesDivisionsOnly {
-    init[2]
+pred tracesDivisionsOnly[handsPerPlayer: Int] {
+    init[handsPerPlayer]
     isRing
 
     rolloverNotOk
@@ -382,8 +371,8 @@ pred traces_LCW_rules[handsPerPlayer: Int] {
     always (attack or divide or pass or doNothing)
 }
 
-pred tracesDeathmatch {
-    init[2]
+pred tracesDeathmatch[handsPerPlayer: Int] {
+    init[handsPerPlayer]
     isRing
 
     rolloverNotOk

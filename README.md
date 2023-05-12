@@ -36,3 +36,15 @@ An instance of our model should be understood as a full game of the game Chopsti
 The custom visualizer shows each state of the game. Each team is a row, and every column (excluding the first) is the number of fingers in that hand. If it is a team's turn, the box with their team name is highlighted in light gray. 
 
 On every turn in the game, a hand takes an action and another hand is the recipient of the action. The hand taking the action is highlighted in light red and the hand recieving the action is highlighted in light blue. For example, if the previous action was an attack, the hand that attacked will be red and the hand that was attacked will be blue. In the case of division, the hand dividing is red and the hand being given fingers is blue.
+
+## What our Model Proved
+As a kid, Theo wondered whether these games would go on forever. Now, he feels vindicated. It is possible for almost every variation of the game to go on indefinitely.
+
+Using the `Suicide` ruleset, the game is able to end one move more quickly than it would be able to without using the `Suicide` rules.
+
+Our model proved Wikipedia wrong. Using the official rules of the game, wikipedia lists possible hand states that should not be reachable. However, our model showed that some of these unreachable states are in fact reachable when a player attacks themselves. 
+
+We also proved the maximum game length where no game states are repeated on Wikipedia wrong. Wikipedia says the maximum number of moves should be 9 for no revisitation, but we found a trace length with 10 moves.
+
+## General Observations
+Temporal Forge could be difficult to use when trying to find a specific state. For example, we wanted to check that in each board state, that specific board state had never existed before. Without using partial functions, checking that a board state has not existed before seems to be impossible.

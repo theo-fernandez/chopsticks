@@ -29,9 +29,9 @@ one sig Suicide extends Rule {}
 
 one sig Game {
     rules: set Rule,
+    
     // For visualization
     var turn: one Team,
-    // var lastChanged: set Hand,
     var lastChangedH1: lone Hand,
     var lastChangedH2: lone Hand
 }

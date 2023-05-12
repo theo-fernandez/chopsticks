@@ -11,11 +11,10 @@ const stage = new Stage()
 
 const numTeams = instances[0].signature('Team').atoms().length
 
-
 const stateGridConfig = {
     grid_location :{
-        x:10,
-        y:10
+        x:50,
+        y:150
     },
     cell_size:{
         x_size:300,
@@ -123,6 +122,38 @@ function visualizeStateAsText(inst, idx) {
 }
 
 // Finally, add the grid to the stage and render it:
+const start = 40
+stage.add(
+    new TextBox({
+        text: `${"🥢️ Chopsticks 🥢️"}`,
+        coords: {x:140, y:start},
+        fontSize: 30
+    }))
+
+stage.add(
+    new TextBox({
+        text: `${"A gray box indicates the team whose turn it is."}`,
+        coords: {x:150, y:start+30},
+        fontSize: 12
+    }))
+stage.add(
+    new TextBox({
+        text: `${"A blue dot marks the hand that just attacked/contributed to a split."}`,
+        coords: {x:207, y:start+50},
+        fontSize: 12
+    }))
+stage.add(
+    new TextBox({
+        text: `${"A red dot marks the hand that was just attacked/received from a split."}`,
+        coords: {x:215, y:start+70},
+        fontSize: 12
+    }))
+stage.add(
+    new TextBox({
+        text: `${"In transfers, the dot colors don't matter."}`,
+        coords: {x:130, y:start+90},
+        fontSize: 12
+    }))
 stage.add(statesGrid)
 stage.render(svg, document)
 

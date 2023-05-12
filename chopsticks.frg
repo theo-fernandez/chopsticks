@@ -27,8 +27,12 @@ one sig Suicide extends Rule {}
 
 one sig Game {
     teams : set Team,
+    rules: set Rule,
+    // For visualization
     var turn: one Team,
-    rules: set Rule
+    var lastChanged: set Hand
+    // var lastH1: lone Hand,
+    // var lastH2: lone Hand
 }
 
 /*--------------------*\
@@ -82,7 +86,6 @@ pred isRing {
 
 pred init[numHands: Int]{
     isRing
-
     all h: Hand | h.fingers = 1
     all t: Team | {
         #{t.hands} = numHands
@@ -92,6 +95,8 @@ pred init[numHands: Int]{
     all h: Hand | one t: Team | {
         h in t.hands
     }
+    
+    #{Game.lastChanged} = 0
 }
 
 pred gameEnded {
@@ -141,6 +146,11 @@ pred attack {
             }
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+
+            -- Update last changed
+            Game.lastChanged' = h1 + h2
+            #{Game.lastChanged'} = 2
+            
 
             -- POST-GUARD: Every hand except h2 is constant
             all h3: Hand | h3 != h2 implies {
@@ -206,6 +216,9 @@ pred transfer[maxStreak: Int] {
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+            -- Update last changed
+            Game.lastChanged' = h1 + h2
+            #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2/h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -239,6 +252,9 @@ pred divide {
             }
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
+            -- Update last changed
+            Game.lastChanged' = h1 + h2
+            #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2, h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -262,7 +278,9 @@ pred pass {
 
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
-
+            -- Update last changed
+            #{Game.lastChanged'} = 0
+        
             -- POST-GUARD: Every hand is constant
             h.fingers' = h.fingers
         }
@@ -276,7 +294,9 @@ pred pass {
 pred doNothing {
     gameEnded
     all h: Hand | h.fingers' = h.fingers
+
     Game.turn' = Game.turn
+    #{Game.lastChanged'} = 0
 }
 
 /*---------------*\
@@ -366,5 +386,5 @@ pred traces_LCW_rules {
 
 run {
     traces_LCW_rules
-    always doNothing
-} for exactly 3 Team, 5 Int
+    eventually always doNothing
+} for exactly 2 Team, 5 Int

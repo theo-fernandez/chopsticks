@@ -115,6 +115,10 @@ pred gameEnded {
 |   Moves  |
 \*---------*/
 
+// For operability with 4 Int --> corrects -1 to what it should be for 8
+fun rollover[num1, num2: Int]: Int { {add[num1, num2] < 0} => 3 else remainder[add[num1, num2], 5]}
+fun isAboveFive[number: Int]: Int {{number > 5} or {number < 0}}
+
 pred attack {
     some t: Game.turn {
         some disj h1, h2: Hand | {
@@ -129,11 +133,13 @@ pred attack {
                 add[h2.fingers, h1.fingers] = 5 implies {
                     h2.fingers' = 0
                 } else {
-                    h2.fingers' = remainder[add[h2.fingers, h1.fingers], 5]
+                    // h2.fingers' = remainder[add[h2.fingers, h1.fingers], 5]
+                    h2.fingers' = rollover[h1.fingers, h2.fingers]
                 }
             } else {
                 -- No rollover: Hand dies if more or equal to 5
-                add[h2.fingers, h1.fingers] >= 5 implies {
+                {isAboveFive[add[h2.fingers, h1.fingers]] or 
+                    add[h2.fingers, h1.fingers] = 5} implies {
                     h2.fingers' = 0
                 } else {
                     h2.fingers' = add[h2.fingers, h1.fingers]
@@ -189,17 +195,19 @@ pred transfer[maxStreak: Int] {
 
                 {Rollover in Game.rules} implies {
                     {Suicide not in Game.rules} implies {
-                        remainder[add[num, h2.fingers], 5] != 0
+                        // remainder[add[num, h2.fingers], 5] != 0
+                        rollover[num, h2.fingers] != 0
                     }
 
-                    h2.fingers' = remainder[add[num, h2.fingers], 5]
+                    // h2.fingers' = remainder[add[num, h2.fingers], 5]
+                    h2.fingers' = rollover[num, h2.fingers]
                     h1.fingers' = subtract[h1.fingers, num]
                 } else {
                     {Suicide not in Game.rules} implies {
-                        h2.fingers + num < 5
+                        not isAboveFive[h2.fingers + num]
                     }
 
-                    {add[num, h2.fingers] >= 5} implies {
+                    {isAboveFive[add[num, h2.fingers]]} implies {
                         h2.fingers' = 0
                     } else {
                         h2.fingers' = add[num, h2.fingers]
@@ -360,7 +368,7 @@ pred tracesDivisionsOnly[handsPerPlayer: Int] {
     always (attack or divide or pass or doNothing)
 }
 
-pred traces_LCW_rules[handsPerPlayer: Int] {
+pred tracesLCWRules[handsPerPlayer: Int] {
     init[handsPerPlayer]
 
     rolloverNotOk
@@ -386,5 +394,5 @@ pred tracesDeathmatch[handsPerPlayer: Int] {
 
 
 run {
-    tracesLCWRules[2]
-} for exactly 2 Team, 5 Int, 6 Hand
+    tracesOfficialRules[2]
+} for exactly 2 Team, 4 Int, 6 Hand

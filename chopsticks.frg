@@ -30,10 +30,11 @@ one sig Game {
     rules: set Rule,
     // For visualization
     var turn: one Team,
-    var lastChanged: set Hand
-    // var lastH1: lone Hand,
-    // var lastH2: lone Hand
+    // var lastChanged: set Hand,
+    var lastChangedH1: lone Hand,
+    var lastChangedH2: lone Hand
 }
+
 
 /*--------------------*\
 |   Rule Predicates   |
@@ -96,7 +97,9 @@ pred init[numHands: Int]{
         h in t.hands
     }
     
-    #{Game.lastChanged} = 0
+    no lastChangedH1
+    no lastChangedH2
+    // #{Game.lastChanged} = 0
 }
 
 pred gameEnded {
@@ -148,8 +151,11 @@ pred attack {
             Game.turn' = Game.turn.next
 
             -- Update last changed
-            Game.lastChanged' = h1 + h2
-            #{Game.lastChanged'} = 2
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
             
 
             -- POST-GUARD: Every hand except h2 is constant
@@ -217,8 +223,10 @@ pred transfer[maxStreak: Int] {
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
             -- Update last changed
-            Game.lastChanged' = h1 + h2
-            #{Game.lastChanged'} = 2
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2/h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -253,8 +261,10 @@ pred divide {
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
             -- Update last changed
-            Game.lastChanged' = h1 + h2
-            #{Game.lastChanged'} = 2
+            Game.lastChangedH1' = h1
+            Game.lastChangedH2' = h2
+            // Game.lastChanged' = h1 + h2
+            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2, h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -279,7 +289,9 @@ pred pass {
             -- ACTION: Change Turn
             Game.turn' = Game.turn.next
             -- Update last changed
-            #{Game.lastChanged'} = 0
+            no lastChangedH1'
+            no lastChangedH2'
+            // #{Game.lastChanged'} = 0
         
             -- POST-GUARD: Every hand is constant
             h.fingers' = h.fingers
@@ -296,7 +308,9 @@ pred doNothing {
     all h: Hand | h.fingers' = h.fingers
 
     Game.turn' = Game.turn
-    #{Game.lastChanged'} = 0
+    no lastChangedH1'
+    no lastChangedH2'
+    // #{Game.lastChanged'} = 0
 }
 
 /*---------------*\
@@ -373,8 +387,8 @@ pred traces_divisions_only {
     always (attack or divide or pass or doNothing)
 }
 
-pred traces_LCW_rules {
-    init[2]
+pred traces_LCW_rules[handsPerPlayer: int] {
+    init[handsPerPlayer]
 
     rolloverNotOk
     selfAttackNotOk
@@ -385,6 +399,6 @@ pred traces_LCW_rules {
 }
 
 run {
-    traces_LCW_rules
+    traces_LCW_rules[2]
     eventually always doNothing
-} for exactly 2 Team, 5 Int
+} for exactly 2 Team, 5 Int, 4 Hand

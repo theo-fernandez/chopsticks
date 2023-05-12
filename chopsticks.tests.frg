@@ -2,6 +2,14 @@
 
 open "chopsticks.frg"
 
+test suite for mystery {
+    test expect{
+        mystery_5p: {
+            #{Team} = 5
+        } for 5 Team is unsat
+    }
+}
+
 test suite for full_game_three_players {
     test expect {
 //         playersTurnNoFingers: {

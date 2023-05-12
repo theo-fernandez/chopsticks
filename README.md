@@ -34,3 +34,8 @@ An instance of our model should be understood as a full game of the game Chopsti
 The custom visualizer shows each state of the game. Each team is a row, and every column (excluding the first) is the number of fingers in that hand. If it is a team's turn, the box with their team name is highlighted in light gray. 
 
 On every turn in the game, a hand takes an action and another hand is the recipient of the action. The hand taking the action is highlighted in light red and the hand recieving the action is highlighted in light blue. For example, if the previous action was an attack, the hand that attacked will be red and the hand that was attacked will be blue. In the case of division, the hand dividing is red and the hand being given fingers is blue.
+
+## What our Model Proved
+As a kid, Theo wondered whether these games would go on forever. Now, he feels vindicated. It is possible for almost every variation of the game to go on indefinitely.
+
+Our model proved wikipedia wrong. Using the official rules of the game, wikipedia lists possible hand states that should not be reachable. However, our model showed that some of these unreachable states are in fact reachable when a player attacks themselves. 

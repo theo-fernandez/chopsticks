@@ -814,11 +814,16 @@ test suite for doNothing {
     }
 }
 
+/*------------------------*\
+|   Investigative traces  |
+\*------------------------*/
+
 pred impossiblyShortGameLength {
     next_state next_state next_state next_state doNothing
 }
 
 pred shortestGameLength {
+    // Wikipedia: "Shortest possible game is 5 moves"
     next_state next_state next_state next_state next_state doNothing
 }
 

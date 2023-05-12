@@ -29,7 +29,7 @@ one sig Suicide extends Rule {}
 
 one sig Game {
     rules: set Rule,
-    
+
     // For visualization
     var turn: one Team,
     var lastChangedH1: lone Hand,
@@ -145,9 +145,6 @@ pred attack {
             -- Update last changed
             Game.lastChangedH1' = h1
             Game.lastChangedH2' = h2
-
-            // Game.lastChanged' = h1 + h2
-            // #{Game.lastChanged'} = 2
             
 
             -- POST-GUARD: Every hand except h2 is constant
@@ -217,8 +214,6 @@ pred transfer[maxStreak: Int] {
             -- Update last changed
             Game.lastChangedH1' = h1
             Game.lastChangedH2' = h2
-            // Game.lastChanged' = h1 + h2
-            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2/h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -255,8 +250,6 @@ pred divide {
             -- Update last changed
             Game.lastChangedH1' = h1
             Game.lastChangedH2' = h2
-            // Game.lastChanged' = h1 + h2
-            // #{Game.lastChanged'} = 2
 
             -- POST-GUARD: Every hand except h2, h1 is constant
             all h3: Hand | h3 != h2 and h3 != h1 implies {
@@ -283,7 +276,6 @@ pred pass {
             -- Update last changed
             no lastChangedH1'
             no lastChangedH2'
-            // #{Game.lastChanged'} = 0
         
             -- POST-GUARD: Every hand is constant
             h.fingers' = h.fingers

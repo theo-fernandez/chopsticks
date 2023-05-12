@@ -1,3 +1,5 @@
+require('d3')
+
 const stage = new Stage()
 
 /////////////////////////////////////////////////////////////////////
@@ -9,22 +11,6 @@ const stage = new Stage()
 
 const numTeams = instances[0].signature('Team').atoms().length
 
-const handImages = [
-    "https://i.imgur.com/IkJ7mzl.png",
-    "https://i.imgur.com/r3ywbgS.png",
-    "https://i.imgur.com/9E9CEt6.png",
-    "https://i.imgur.com/jZYaGO6.png",
-    "https://i.imgur.com/yUcBdKe.png"
-]
-function render_hand(number) {
-    const img = document.createElement('img')
-    img.src = handImages[number]
-    img.style.width = '100%'
-    img.style.height = '15%'
-    img.style.display = 'block'
-    img.style['margin-bottom'] = '10%'
-    return img;
-  }
 
 const stateGridConfig = {
     grid_location :{
@@ -126,11 +112,11 @@ function visualizeStateAsText(inst, idx) {
 
             group.add({x: handIdx+1, y:teamIdx}, 
             new TextBox({
+                name: "hi",
                 text: `${fingers[handsOrder[handIdxAll]]}`,
                 color: 'black',
                 fontSize: 16})
             )
-
         })
     })
     return group
@@ -139,3 +125,21 @@ function visualizeStateAsText(inst, idx) {
 // Finally, add the grid to the stage and render it:
 stage.add(statesGrid)
 stage.render(svg, document)
+
+
+// const handImages = [
+//     "https://i.imgur.com/IkJ7mzl.png",
+//     "https://i.imgur.com/r3ywbgS.png",
+//     "https://i.imgur.com/9E9CEt6.png",
+//     "https://i.imgur.com/jZYaGO6.png",
+//     "https://i.imgur.com/yUcBdKe.png"
+// ]
+// function render_hand(number) {
+//     const img = document.createElement('img')
+//     img.src = handImages[number]
+//     img.style.width = '100%'
+//     img.style.height = '15%'
+//     img.style.display = 'block'
+//     img.style['margin-bottom'] = '10%'
+//     return img;
+//   }

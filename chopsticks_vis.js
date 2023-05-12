@@ -7,6 +7,7 @@ const stage = new Stage()
 // Create a grid object that contains one cell per state
 //    `instances` is an array that contains the states
 const numTeams = instances[0].signature('Team').atoms().length
+const numHands = instances[0].signature('Hand').atoms().length
 
 const stateGridConfig = {
     grid_location :{
@@ -14,7 +15,7 @@ const stateGridConfig = {
         y:150
     },
     cell_size:{
-        x_size:300,
+        x_size:50*numHands,
         y_size:100*numTeams
     },
     grid_dimensions:{
@@ -146,6 +147,7 @@ stage.add(
     }))
 stage.add(statesGrid)
 stage.render(svg, document)
+const svgContainer = document.getElementById('svg-container')
 svgContainer.getElementsByTagName('svg')[0].style.height = '500%'
 svgContainer.getElementsByTagName('svg')[0].style.width = '100%'
 

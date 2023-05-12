@@ -1,0 +1,24 @@
+1. Wikipedia page
+-- Theo --
+- chopsticks can be played with many rulesets. the key rule variations include:
+--- when your hand is 'out'
+--- whether you can split fingers across hands
+--- whether you can attack yourself and if you can intentionally get rid of one of your hands
+-- and these variations can create a lot of different rule permutations (under variations)
+
+there are also interesting properties that the wikipedia apeg claims, for instance
+- impossible hand positions
+- longest possible games
+
+we made a model that is extensible on
+- the number of teams
+- the number of hands per team
+- the rulesets that you can initialize your game with
+
+
+-- Alyssa --
+theo example
+split-example
+3 teams 3 hands
+3 teams 2 hands
+self-implosion example

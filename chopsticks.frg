@@ -393,7 +393,7 @@ pred tracesDeathmatch[handsPerPlayer: Int] {
 pred tracesOnlyGetsFarther[handsPerPlayer: Int] {
     init[handsPerPlayer]
     isRing
-    
+
     rolloverOk
     selfAttackNotOk
     suicideNotOk
@@ -404,5 +404,28 @@ pred tracesOnlyGetsFarther[handsPerPlayer: Int] {
 
 
 // run {
-//     tracesOfficialRules[2]
+//     tracesSuicide[2]
+//     next_state next_state next_state next_state doNothing
 // } for exactly 2 Team, 4 Int, 6 Hand
+
+// run {
+//     tracesOfficialRules[2]
+//     eventually divide
+//     eventually doNothing
+// } for exactly 2 Team, 4 Int, 6 Hand
+
+// run {
+//     tracesOfficialRules[2]
+//     eventually divide
+//     eventually doNothing
+// } for exactly 2 Team, 4 Int, 6 Hand
+
+// run {
+//     tracesLCWRules[2]
+//     next_state next_state next_state next_state next_state gameEnded
+// } for exactly 2 Team, 4 Int, 6 Hand
+
+run {
+    tracesOfficialRules[3]
+    // eventually doNothing
+} for exactly 3 Team, 4 Int, 9 Hand

@@ -385,7 +385,17 @@ pred tracesDeathmatch[handsPerPlayer: Int] {
 
     rolloverNotOk
     selfAttackOk
-    allSplitsValid
+    suicideNotOk
+
+    always (attack or pass or doNothing)
+}
+
+pred tracesOnlyGetsFarther[handsPerPlayer: Int] {
+    init[handsPerPlayer]
+    isRing
+    
+    rolloverOk
+    selfAttackNotOk
     suicideNotOk
 
     always (attack or pass or doNothing)
@@ -393,6 +403,6 @@ pred tracesDeathmatch[handsPerPlayer: Int] {
 
 
 
-run {
-    tracesOfficialRules[2]
-} for exactly 2 Team, 4 Int, 6 Hand
+// run {
+//     tracesOfficialRules[2]
+// } for exactly 2 Team, 4 Int, 6 Hand

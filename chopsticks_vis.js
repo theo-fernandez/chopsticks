@@ -1,5 +1,3 @@
-require('d3')
-
 const stage = new Stage()
 
 /////////////////////////////////////////////////////////////////////
@@ -8,7 +6,6 @@ const stage = new Stage()
 
 // Create a grid object that contains one cell per state
 //    `instances` is an array that contains the states
-
 const numTeams = instances[0].signature('Team').atoms().length
 
 const stateGridConfig = {
@@ -27,18 +24,11 @@ const stateGridConfig = {
   }
 
 const statesGrid = new Grid(stateGridConfig)
-// var Y= 100
+
 // For every instance, place a visualization in the proper grid location
 instances.forEach( (inst, idx) => {    
     const lb = idx == loopBack ? " (loopback)" : ""
     statesGrid.add({x:0, y:idx}, new TextBox(`State:${idx}${lb}`,{x:0,y:0},'black',16))
-
-    // stage.add(new TextBox({
-    //     text: `${numTeams}`, 
-    //     coords: {x:300, y:Y},
-    //     color: 'black',
-    //     fontSize: 16}))
-    // Y=Y+100;
 
     statesGrid.add({x:0, y:idx}, visualizeStateAsText(inst, idx))    
 })
@@ -138,13 +128,13 @@ stage.add(
     }))
 stage.add(
     new TextBox({
-        text: `${"A blue dot marks the hand that just attacked/contributed to a split."}`,
+        text: `${"A red dot marks the hand that just attacked/contributed to a split."}`,
         coords: {x:207, y:start+50},
         fontSize: 12
     }))
 stage.add(
     new TextBox({
-        text: `${"A red dot marks the hand that was just attacked/received from a split."}`,
+        text: `${"A blue dot marks the hand that was just attacked/received from a split."}`,
         coords: {x:215, y:start+70},
         fontSize: 12
     }))
@@ -156,6 +146,8 @@ stage.add(
     }))
 stage.add(statesGrid)
 stage.render(svg, document)
+svgContainer.getElementsByTagName('svg')[0].style.height = '500%'
+svgContainer.getElementsByTagName('svg')[0].style.width = '100%'
 
 
 // const handImages = [

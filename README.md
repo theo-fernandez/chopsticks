@@ -1,4 +1,6 @@
-# Chopsticks Game
+# 🥢️ Chopsticks
+
+![](https://www.wikihow.com/images/thumb/b/bb/Play-Chopsticks-Step-3-Version-3.jpg/aid144890-v4-728px-Play-Chopsticks-Step-3-Version-3.jpg.webp)
 
 ## The Rules
 Chopsticks is a game that elementary schoolers play around the world. It is typically a two player game where each player has two hands (though it can be played with more players or more hands). Initially, each player holds up one finger on each hand. On each players turn, they have the opportunity to attack, transfer, or divide. If they attack, they choose one of their hands and an opponents hand and add the number of fingers on their hand to the number of fingers on their opponents hand. If they transfer, they can move fingers from one of their hands to another. Finally, if they can divide, they move fingers from an alive hand to a dead hand. Hands die when the total number of fingers on the hand is five or more. A player loses when they have no hands that are alive. A player wins once all other players have lost. There are many variations on these rules, and we have modelled our favorites.

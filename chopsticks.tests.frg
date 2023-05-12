@@ -853,59 +853,58 @@ pred validState {
 test suite for tracesOfficialRules {
     test expect {
         vacuity: {
-            tracesOfficialRules
+            tracesOfficialRules[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesOfficialRules implies eventually gameEnded
+            tracesOfficialRules[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesOfficialRules implies not (eventually gameEnded)
+            tracesOfficialRules[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesOfficialRules and impossiblyShortGameLength
+            tracesOfficialRules[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesOfficialRules implies shortestGameLength
+            tracesOfficialRules[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesOfficialRules and eventually unreachableState
+            tracesOfficialRules[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesOfficialRules implies eventually always bothPlayersHaveOneHand
+            tracesOfficialRules[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesOfficialRules implies eventually playerWinsUnscathed
+            tracesOfficialRules[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
-}
 
-test suite for tracesOfficialRulesThreeHands {
+    -- Official Rules but Each Player has 3 Hands
     test expect {
         vacuity: {
-            tracesOfficialRulesThreeHands
+            tracesOfficialRulesThreeHands[3]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesOfficialRulesThreeHands implies eventually gameEnded
+            tracesOfficialRulesThreeHands[3] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesOfficialRulesThreeHands implies not (eventually gameEnded)
+            tracesOfficialRulesThreeHands[3] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesOfficialRulesThreeHands and impossiblyShortGameLength
+            tracesOfficialRulesThreeHands[3] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesOfficialRulesThreeHands implies always validState
+            tracesOfficialRulesThreeHands[3] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -913,39 +912,39 @@ test suite for tracesOfficialRulesThreeHands {
 test suite for tracesSuicide {
     test expect {
         vacuity: {
-            tracesSuicide
+            tracesSuicide[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesSuicide implies eventually gameEnded
+            tracesSuicide[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesSuicide implies not (eventually gameEnded)
+            tracesSuicide[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesSuicide and impossiblyShortGameLength
+            tracesSuicide[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesSuicide implies shortestGameLength
+            tracesSuicide[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesSuicide and eventually unreachableState
+            tracesSuicide[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesSuicide implies always validState
+            tracesSuicide[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesSuicide implies eventually always bothPlayersHaveOneHand
+            tracesSuicide[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesSuicide implies eventually playerWinsUnscathed
+            tracesSuicide[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -953,39 +952,39 @@ test suite for tracesSuicide {
 test suite for tracesCutoff {
     test expect {
         vacuity: {
-            tracesCutoff
+            tracesCutoff[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesCutoff implies eventually gameEnded
+            tracesCutoff[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesCutoff implies not (eventually gameEnded)
+            tracesCutoff[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesCutoff and impossiblyShortGameLength
+            tracesCutoff[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesCutoff implies shortestGameLength
+            tracesCutoff[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesCutoff and eventually unreachableState
+            tracesCutoff[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesCutoff implies always validState
+            tracesCutoff[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesCutoff implies eventually always bothPlayersHaveOneHand
+            tracesCutoff[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesCutoff implies eventually playerWinsUnscathed
+            tracesCutoff[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -993,39 +992,39 @@ test suite for tracesCutoff {
 test suite for tracesTransfersOnly {
     test expect {
         vacuity: {
-            tracesTransfersOnly
+            tracesTransfersOnly[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesTransfersOnly implies eventually gameEnded
+            tracesTransfersOnly[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesTransfersOnly implies not (eventually gameEnded)
+            tracesTransfersOnly[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesTransfersOnly and impossiblyShortGameLength
+            tracesTransfersOnly[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesTransfersOnly implies shortestGameLength
+            tracesTransfersOnly[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesTransfersOnly and eventually unreachableState
+            tracesTransfersOnly[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesTransfersOnly implies always validState
+            tracesTransfersOnly[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesTransfersOnly implies eventually always bothPlayersHaveOneHand
+            tracesTransfersOnly[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesTransfersOnly implies eventually playerWinsUnscathed
+            tracesTransfersOnly[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -1033,39 +1032,39 @@ test suite for tracesTransfersOnly {
 test suite for tracesDivisionsOnly {
     test expect {
         vacuity: {
-            tracesDivisionsOnly
+            tracesDivisionsOnly[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesDivisionsOnly implies eventually gameEnded
+            tracesDivisionsOnly[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesDivisionsOnly implies not (eventually gameEnded)
+            tracesDivisionsOnly[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesDivisionsOnly and impossiblyShortGameLength
+            tracesDivisionsOnly[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesDivisionsOnly implies shortestGameLength
+            tracesDivisionsOnly[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesDivisionsOnly and eventually unreachableState
+            tracesDivisionsOnly[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesDivisionsOnly implies always validState
+            tracesDivisionsOnly[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesDivisionsOnly implies eventually always bothPlayersHaveOneHand
+            tracesDivisionsOnly[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesDivisionsOnly implies eventually playerWinsUnscathed
+            tracesDivisionsOnly[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -1073,39 +1072,39 @@ test suite for tracesDivisionsOnly {
 test suite for tracesLCWRules {
     test expect {
         vacuity: {
-            tracesLCWRules
+            tracesLCWRules[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesLCWRules implies eventually gameEnded
+            tracesLCWRules[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesLCWRules implies not (eventually gameEnded)
+            tracesLCWRules[2] implies not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         impossiblyShort: {
-            tracesLCWRules and impossiblyShortGameLength
+            tracesLCWRules[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesLCWRules implies shortestGameLength
+            tracesLCWRules[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesLCWRules and eventually unreachableState
+            tracesLCWRules[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesLCWRules implies always validState
+            tracesLCWRules[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesLCWRules implies eventually always bothPlayersHaveOneHand
+            tracesLCWRules[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesLCWRules implies eventually playerWinsUnscathed
+            tracesLCWRules[2] implies eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is sat
     }
 }
@@ -1113,64 +1112,64 @@ test suite for tracesLCWRules {
 test suite for tracesDeathmatch {
     test expect {
         vacuity: {
-            tracesDeathmatch
+            tracesDeathmatch[2]
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canEnd: {
-            tracesDeathmatch implies eventually gameEnded
+            tracesDeathmatch[2] implies eventually gameEnded
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         canLoopForever: {
-            tracesDeathmatch and not (eventually gameEnded)
+            tracesDeathmatch[2] and not (eventually gameEnded)
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         impossiblyShort: {
-            tracesDeathmatch and impossiblyShortGameLength
+            tracesDeathmatch[2] and impossiblyShortGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         shortestGame: {
-            tracesDeathmatch implies shortestGameLength
+            tracesDeathmatch[2] implies shortestGameLength
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         invalidHands: {
-            tracesDeathmatch and eventually unreachableState
+            tracesDeathmatch[2] and eventually unreachableState
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         alwaysValid: {
-            tracesDeathmatch implies always validState
+            tracesDeathmatch[2] implies always validState
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         eventuallyBothPlayersPlayOneHanded: {
-            tracesDeathmatch implies eventually always bothPlayersHaveOneHand
+            tracesDeathmatch[2] implies eventually always bothPlayersHaveOneHand
         } for exactly 2 Team, 5 Int, 6 Hand is sat
 
         playerWinsWithOneFingerEachHand: {
-            tracesDeathmatch and eventually playerWinsUnscathed
+            tracesDeathmatch[2] and eventually playerWinsUnscathed
         } for exactly 2 Team, 5 Int, 6 Hand is unsat
 
         // -- Deathmatch played with three teams (instead of two)
         vacuityThreeTeams: {
-            tracesDeathmatch
+            tracesDeathmatch[2]
         } for exactly 3 Team, 5 Int, 6 Hand is sat
 
         canEndThreeTeams: {
-            tracesDeathmatch implies eventually gameEnded
+            tracesDeathmatch[2] implies eventually gameEnded
         } for exactly 3 Team, 5 Int, 6 Hand is sat
 
         canLoopForeverThreeTeams: {
-            tracesDeathmatch and not (eventually gameEnded)
+            tracesDeathmatch[2] and not (eventually gameEnded)
         } for exactly 3 Team, 5 Int, 6 Hand is unsat
 
         impossiblyShortThreeTeams: {
-            tracesDeathmatch and impossiblyShortGameLength
+            tracesDeathmatch[2] and impossiblyShortGameLength
         } for exactly 3 Team, 5 Int, 6 Hand is unsat
 
         shortestGameThreeTeams: {
-            tracesDeathmatch implies shortestGameLength
+            tracesDeathmatch[2] implies shortestGameLength
         } for exactly 3 Team, 5 Int, 6 Hand is sat
 
         alwaysValid: {
-            tracesDeathmatch implies always validState
+            tracesDeathmatch[2] implies always validState
         } for exactly 3 Team, 5 Int, 6 Hand is sat
     }
 }

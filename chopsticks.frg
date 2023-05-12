@@ -1,7 +1,9 @@
 #lang forge
 
 option problem_type temporal
-option max_tracelength 20
+option max_tracelength 15
+option min_tracelength 5
+option solver Glucose
 
 /*---------------*\
 |   Definitions   |
@@ -26,7 +28,6 @@ one sig SelfAttack extends Rule {}
 one sig Suicide extends Rule {}
 
 one sig Game {
-    teams : set Team,
     var turn: one Team,
     rules: set Rule
 }
@@ -70,15 +71,6 @@ pred isRing {
 	-- Every team gets to go
 	Team->Team in ^next
 }
-
-// pred validState{
-//     all h: Hand | {
-//         h.fingers >= 0
-//         h.fingers < 5
-//     }
-
-//     #{Game.teams} >= 2
-// }
 
 pred init[numHands: Int]{
     isRing
@@ -283,7 +275,7 @@ pred doNothing {
 |   Rule traces  |
 \*---------------*/
 
-pred traces_official_rules {
+pred tracesOfficialRules {
     init[2]
 
     rolloverOk
@@ -294,7 +286,7 @@ pred traces_official_rules {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred traces_official_rules_three_hands {
+pred tracesOfficialRulesThreeHands {
     init[3]
 
     rolloverOk
@@ -305,7 +297,7 @@ pred traces_official_rules_three_hands {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred traces_suicide {
+pred tracesSuicide {
     init[2]
     isRing
 
@@ -317,7 +309,7 @@ pred traces_suicide {
     always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred traces_cutoff {
+pred tracesCutoff {
     init[2]
     isRing
 
@@ -326,10 +318,10 @@ pred traces_cutoff {
     allSplitsValid
     suicideNotOk
 
-    always (attack or divide or transfer[3] or doNothing)
+    always (attack or divide or transfer[3] or pass or doNothing)
 }
 
-pred traces_transfers_only {
+pred tracesTransfersOnly {
     init[2]
     isRing
 
@@ -341,7 +333,7 @@ pred traces_transfers_only {
     always (attack or transfer[3] or pass or doNothing)
 }
 
-pred traces_divisions_only {
+pred tracesDivisionsOnly {
     init[2]
     isRing
 
@@ -353,7 +345,7 @@ pred traces_divisions_only {
     always (attack or divide or pass or doNothing)
 }
 
-pred traces_LCW_rules {
+pred tracesLCWRules {
     init[2]
 
     rolloverNotOk
@@ -364,7 +356,23 @@ pred traces_LCW_rules {
     always (attack or divide or pass or doNothing)
 }
 
+pred tracesDeathmatch {
+    init[2]
+    isRing
+
+    rolloverNotOk
+    selfAttackOk
+    allSplitsValid
+    suicideNotOk
+
+    always (attack or pass or doNothing)
+}
+
+
+
 run {
-    traces_LCW_rules
-    always doNothing
-} for exactly 3 Team, 5 Int
+    tracesLCWRules
+    // eventually divide
+    // eventually doNothing
+    // #{Hand} = 6
+} for exactly 2 Team, 5 Int, 6 Hand

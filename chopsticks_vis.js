@@ -15,7 +15,7 @@ const stateGridConfig = {
         y:150
     },
     cell_size:{
-        x_size:50*numHands,
+        x_size:80*numHands,
         y_size:100*numTeams
     },
     grid_dimensions:{
